@@ -1,4 +1,3 @@
-import { Droppable } from "react-beautiful-dnd";
 import ListItem from "./ListItem";
 import React from "react";
 import styled from "styled-components";
