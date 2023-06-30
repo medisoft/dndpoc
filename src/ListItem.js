@@ -1,8 +1,8 @@
-import { Draggable } from "react-beautiful-dnd";
-import { LoremIpsum } from "lorem-ipsum";
-import { generateFromString } from "generate-avatar";
-import React, { useMemo } from "react";
-import styled, { css } from "styled-components";
+import {Draggable} from "react-beautiful-dnd";
+import {loremIpsum} from "react-lorem-ipsum";
+import {generateFromString} from "generate-avatar";
+import React, {useEffect, useMemo, useState} from "react";
+import styled, {css} from "styled-components";
 
 const Avatar = styled.img`
   height: 30px;
@@ -37,37 +37,52 @@ const DragItem = styled.div`
   flex-direction: column;
 `;
 
-const lorem = new LoremIpsum();
 
-const ListItem = ({ item, index }) => {
-  const randomHeader = useMemo(() => lorem.generateWords(2+Math.ceil(Math.random()*30)), []);
+const ListItem = ({item, index, numWords, editMode}) => {
+    // const [randomHeader, setRandomHeader] = useState('');
+    // const [randomContent, setRandomContent] = useState(item.content);
+    // const randomHeader = useMemo(() => lorem.generateWords(2+Math.ceil(Math.random()*30)), []);
+    const randomHeader = useMemo(() => loremIpsum({avgWordsPerSentence: 8, avgSentencesPerParagraph: 1, p: 1}), []);
+    const randomContent = useMemo(() => loremIpsum({p: 1, avgSentencesPerParagraph: Math.round(numWords / 100), random: false}), []);
 
-  return (
-    <Draggable draggableId={item.id} index={index}>
-      {(provided, snapshot) => {
-        return (
-          <DragItem
-            ref={provided.innerRef}
-            snapshot={snapshot}
-            {...provided.draggableProps}
-            {...provided.dragHandleProps}
-          >
-            <CardHeader>{randomHeader}</CardHeader>
-            <span>Content</span>
-            <CardFooter>
-              <span>{item.content}</span>
-              <Author>
-                {item.id}
-                <Avatar
-                  src={`data:image/svg+xml;utf8,${generateFromString(item.id)}`}
-                />
-              </Author>
-            </CardFooter>
-          </DragItem>
-        );
-      }}
-    </Draggable>
-  );
+    // useMemo(()=>{
+    //     setRandomHeader(loremIpsum({avgWordsPerSentence: 8, avgSentencesPerParagraph: 1, p: 1}));
+    //     setRandomContent(loremIpsum({p: 1, avgSentencesPerParagraph: Math.round(numWords / 100), random: false}));
+    // }, []);
+/*
+    useEffect(() => {
+        setRandomHeader(loremIpsum({avgWordsPerSentence: 8, avgSentencesPerParagraph: 1, p: 1}));
+        setRandomContent(loremIpsum({p: 1, avgSentencesPerParagraph: Math.round(numWords / 100), random: false}));
+    }, [])
+*/
+
+    return (
+        <Draggable draggableId={item.id} index={index} isDragDisabled={editMode}>
+            {(provided, snapshot) => {
+                return (
+                    <DragItem
+                        ref={provided.innerRef}
+                        snapshot={snapshot}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                    >
+                        <CardHeader>{randomHeader}</CardHeader>
+                        <span>Content</span>
+                        <CardFooter>
+                            <span>{randomContent}</span>
+                            <Author>
+                                {item.id}
+                                <Avatar
+                                    src={`data:image/svg+xml;utf8,${generateFromString(item.id)}`}
+                                />
+                            </Author>
+                        </CardFooter>
+                        {!editMode && "Edit Mode Enabled"}
+                    </DragItem>
+                );
+            }}
+        </Draggable>
+    );
 };
 
 export default ListItem;

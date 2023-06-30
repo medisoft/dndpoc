@@ -2,6 +2,7 @@ import { Droppable } from "react-beautiful-dnd";
 import ListItem from "./ListItem";
 import React from "react";
 import styled from "styled-components";
+import {StrictModeDroppable} from "./StrictModeDroppable";
 
 const ColumnHeader = styled.div`
   text-transform: uppercase;
@@ -14,19 +15,19 @@ const DroppableStyles = styled.div`
   background: #d4d4d4;
 `;
 
-const DraggableElement = ({ prefix, elements }) => (
+const DraggableElement = ({ prefix, elements, editMode }) => (
   <DroppableStyles>
-    <ColumnHeader>{prefix}</ColumnHeader>
-    <Droppable droppableId={`${prefix}`}>
+    <ColumnHeader>{prefix} - {elements.length}</ColumnHeader>
+    <StrictModeDroppable droppableId={`${prefix}`}>
       {(provided) => (
         <div {...provided.droppableProps} ref={provided.innerRef}>
           {elements.map((item, index) => (
-            <ListItem key={item.id} item={item} index={index} />
+            <ListItem key={item.id} item={item} index={index} numWords={item.numWords} editMode={elements.length>1?editMode:true} />
           ))}
           {provided.placeholder}
         </div>
       )}
-    </Droppable>
+    </StrictModeDroppable>
   </DroppableStyles>
 );
 
